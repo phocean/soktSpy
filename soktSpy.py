@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import psutil,sys,time
+import psutil,sys,time,logging
 from datetime import datetime
 from ConfigParser import SafeConfigParser
 
@@ -15,30 +15,6 @@ def lookupListDict (liste,value,index):
         if value == dico[index]:
             return 1
     return 0
-
-def fileopen(path,mode):
-    """
-    Snippet to open files
-    The mode (read, write, append, etc.) is taken as a parameter
-    Return the file descriptor
-    """
-    try:
-        fd=open(path,mode)
-    except IOError:
-        print "[!] Error opening path: %s (%s)" %(path,mode)
-        sys.exit(2)
-    return fd
-
-def fileclose(fd):
-    """
-    Snippet to close files cleanly
-    Return 0
-    """
-    try:
-        fd.close()
-    except IOError:
-        print "[!] Error closing file descriptor:%s" %fd
-        sys.exit(2)
 
 def config(confFile):
     """
@@ -72,9 +48,7 @@ def config(confFile):
             #print '  %s = %s' % (name, value)
             # retrieve values from valid fields
             if sectionName == 'log':
-                if name == 'path':
-                    path = value
-                elif name == 'filename':
+                if name == 'filename':
                     filename = value
                 elif name == 'frequency':
                     freq = int(value)
@@ -83,15 +57,15 @@ def config(confFile):
         #print
 
     # check whether required fieds were retrieved, exit otherwise
-    if not path or not filename or not valList:
+    if not filename or not valList or not freq or not valList:
         print '[!] Uncorrect configuration file. Exiting.'
         sys.exit(1)
 
-    return (freq, path + '\\\\' + filename, valList)
+    return (freq, filename, valList)
 
 
 def main():
-    
+
     print '''
             _     _    _____             
            | |   | |  / ____|            
@@ -107,15 +81,18 @@ def main():
     //phocean \n'''
 
     liste = []
+    excl = []
     
     # Parse configuration file
-    (freq,filePath,ipList) = config('config.cfg')
+    (freq,filePath,ipList) = config('soktSpy.cfg')
 
     print '[*] IP address(es) to monitor: %s\n[*] Logging to file: %s\n[*] Polling frequency = %d sec' %(ipList, filePath, freq)
     raw_input('[?] Press [Enter] to proceed ')
+    logger.info("IP: %s\tFrequency: %d sec")
 
     # Main loop
     print '[*] Entering infinite loop. [Ctrl]+[c] to quit.'
+
     while True:
         # sleeptime in seconds
         time.sleep(freq)
@@ -123,57 +100,85 @@ def main():
         # loop among running processes
         for pid in psutil.get_pid_list():
 
-            # only process the first occurence of a given process, skip next ones
-            if psutil.pid_exists(pid) and lookupListDict(liste,pid,'pid') == 0:
-                process = psutil.Process(pid)
+            try:
 
-                # parse open sockets of the process
-                for conn in process.get_connections():
+                # only process the first occurence of a given process, skip next ones
+                if pid not in excl and psutil.pid_exists(pid) and lookupListDict(liste,pid,'pid') == 0:
+                    process = psutil.Process(pid)
 
-                    # we will build a dictionnary
-                    socket = {}
+                
+                    #if pid not in excl:
+                    a = process.name
+                    # parse open sockets of the process
+                    for conn in process.get_connections():
 
-                    # only keep sockets that match an IP that we want to monitor and fill up the dictionnary
-                    if conn.remote_address and conn.remote_address[0] in ipList:
+                        # we will build a dictionnary
+                        socket = {}
 
-                        # pid and timestamp
-                        socket['pid'] = pid
-                        socket['ptime'] = datetime.fromtimestamp(process.create_time).strftime('%Y-%m-%d%H:%M:%S')
+                        # only keep sockets that match an IP that we want to monitor and fill up the dictionnary
+                        if conn.remote_address and conn.remote_address[0] in ipList:
 
-                        # loop inside interesting process attributes
-                        for i in ['name','username']:
-                            # in some cases, not all attributes may be readable
-                            try:
-                                socket[i] = getattr(process,i)
-                            except psutil.AccessDenied:
-                                socket[i] = '** access denied **'
-                        
-                        # loop inside interesting socket attributes
-                        for i in ['family','local_address','remote_address','status']:
-                            try:
-                                socket[i] = getattr(conn,i)
-                            except psutil.AccessDenied:
-                                i[socket] = '** access denied **'
-                        
-                        # build the list and write to the log file (one line per socket)
-                        print '[*] Logged an event'
-                        liste.append(socket)
-                        flog = fileopen(filePath, 'a')
-                        flog.write("%s %s %d %s %d %s %s %s %s\n" % (datetime.now().strftime('%Y-%m-%d%H:%M:%S'),socket['ptime'],socket['pid'],socket['name'],socket['family'],socket['username'],socket['remote_address'],socket['local_address'],socket['status']) )
-                        fileclose(flog)
-        
-    #fileclose(flog)
-    return 0
+                            # pid and timestamp
+                            socket['pid'] = pid
+                            socket['ptime'] = datetime.fromtimestamp(process.create_time).strftime('%Y-%m-%d %H:%M:%S')
+
+                            # loop inside interesting process attributes
+                            for i in ['name','username']:
+                                # in some cases, not all attributes may be readable
+                                try:
+                                    socket[i] = getattr(process,i)
+                                except psutil.AccessDenied:
+                                    socket[i] = '** access denied **'
+                            
+                            # loop inside interesting socket attributes
+                            for i in ['family','local_address','remote_address','status']:
+                                try:
+                                    socket[i] = getattr(conn,i)
+                                except psutil.AccessDenied:
+                                    i[socket] = '** access denied **'
+                            
+                            # build the list and write to the log file (one line per socket)
+                            print '[*] Logged an event'
+                            liste.append(socket)
+                            logger.critical("%s %d %s %d %s %s --> %s %s" % (socket['ptime'],socket['pid'],socket['name'],socket['family'],socket['username'],socket['local_address'],socket['remote_address'],socket['status']))
+
+            except psutil.AccessDenied as e:
+                print "[!] Access to process %d denied." %e.pid
+                logger.warn("Access to process %d denied." % e.pid)
+                excl.append(pid)
+                continue
+            except psutil.NoSuchProcess as e:
+                print "[!] Proccess %d not found or no longer exists (zombie)." % e.pid
+                logger.warn("Process %d not found or no longer exists (zombie)" % e.pid)
+                continue
+            except psutil.TimeoutExpired:
+                print "[!] Timeout expired."
+                logger.warn('Timeout expired.')
+                continue
+    return
 
 if __name__ == '__main__':
+
     try:
-        ret = main()
-        if ret==0:
-            sys.exit(0)
-        else:
-            sys.exit(1)
+
+        logger = logging.getLogger('soktSpy')
+        handler = logging.FileHandler('soktSpy2.log')
+        formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        logger.setLevel(logging.INFO)
+        logger.info('SoktSpy started')
+
+        main()
+
     except OSError:
         print "[!] I/O Error"
-        sys.exit(1)
+        logger.error('I/O Error')
     except KeyboardInterrupt:
-        print "[!] Keyboard Interruption: Exiting."         
+        print "[!] Keyboard Interruption"
+        logger.info('Keyboard Interruption')
+    except:
+        logger.exception("")
+    finally:
+        print "[!] Exiting."
+        logger.info('SoktSpy exited')
