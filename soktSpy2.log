@@ -1,23 +1,37 @@
-2012-05-14 23:53:51,079 INFO SoktSpy started
-2012-05-14 23:53:51,754 INFO IP: %s	Frequency: %d sec
-2012-05-14 23:53:52,764 CRITICAL 2012-05-10 09:00:03 43 mtmfs 2 root ('127.0.0.1', 1023) ('127.0.0.1', 49153) ESTABLISHED
-
-2012-05-14 23:53:55,275 INFO SoktSpy exited
-2012-05-15 00:03:19,036 INFO SoktSpy started
-2012-05-15 00:03:20,015 INFO IP: %s	Frequency: %d sec
-2012-05-15 00:03:21,026 CRITICAL 2012-05-10 09:00:03 43 mtmfs 2 root ('127.0.0.1', 49153) --> ('127.0.0.1', 1023) ESTABLISHED
-
-2012-05-15 00:03:21,027 WARNING Access to process 37072 denied.
-2012-05-15 00:03:25,381 INFO Keyboard Interruption
-2012-05-15 00:03:25,381 INFO SoktSpy exited
-2012-05-15 00:03:34,644 INFO SoktSpy started
-2012-05-15 00:03:35,386 INFO IP: %s	Frequency: %d sec
-2012-05-15 00:03:36,396 CRITICAL 2012-05-10 09:00:03 43 mtmfs 2 root ('127.0.0.1', 49153) --> ('127.0.0.1', 1023) ESTABLISHED
-
-2012-05-15 00:03:36,398 WARNING Access to process 37072 denied.
-2012-05-15 00:03:36,953 INFO SoktSpy exited
-2012-05-15 00:11:36,930 INFO SoktSpy started
-2012-05-15 00:11:37,636 INFO IP: %s	Frequency: %d sec
-2012-05-15 00:11:38,647 CRITICAL 2012-05-10 09:00:03 43 mtmfs 2 root ('127.0.0.1', 49153) --> ('127.0.0.1', 1023) ESTABLISHED
-2012-05-15 00:11:38,649 WARNING Access to process 37072 denied.
-2012-05-15 00:11:41,357 INFO SoktSpy exited
+2012-05-15 13:56:32,546 INFO SoktSpy started
+2012-05-15 13:56:33,547 INFO IP: %s	Frequency: %d sec
+2012-05-15 13:56:34,557 CRITICAL Process Age: 2012-05-10 09:00:03 Pid: 43 Name: mtmfs Inet Family: 2 Username: root Local Address: ('127.0.0.1', 49153) Remote Address: ('127.0.0.1', 1023) Status: ESTABLISHED
+2012-05-15 13:56:34,558 WARNING Access to process 37072 denied.
+2012-05-15 13:56:40,482 INFO Keyboard Interruption
+2012-05-15 13:56:40,482 INFO SoktSpy exited
+2012-05-15 14:07:24,022 INFO SoktSpy started
+2012-05-15 14:07:24,992 INFO IP: %s	Frequency: %d sec
+2012-05-15 14:07:26,000 CRITICAL Create_Time: 2012-05-10 09:00:03 Pid: 43 Name: mtmfs Inet_Family: 2 Username: root Local_Address: ('127.0.0.1', 49153) Remote_Address: ('127.0.0.1', 1023) Status: ESTABLISHED
+2012-05-15 14:07:26,002 WARNING Access to process 37072 denied.
+2012-05-15 14:07:28,745 INFO Keyboard Interruption
+2012-05-15 14:07:28,745 INFO SoktSpy exited
+2012-05-15 14:28:15,064 INFO ** SoktSpy started **
+2012-05-15 14:28:15,826 INFO IP: %s	Frequency: %d sec
+2012-05-15 14:28:16,836 CRITICAL - Create_Time: 2012-05-10 09:00:03 - Pid: 43 - Name: mtmfs Inet_Family: 2 Username: root Local_Address: ('127.0.0.1', 49153) Remote_Address: ('127.0.0.1', 1023) Status: ESTABLISHED
+2012-05-15 14:28:16,837 WARNING Access to process 37072 denied.
+2012-05-15 14:28:17,937 INFO ** SoktSpy exited **
+2012-05-15 14:29:39,496 INFO ** SoktSpy started **
+2012-05-15 14:29:40,244 INFO IP: %s	Frequency: %d sec
+2012-05-15 14:29:41,254 CRITICAL - Create_Time: 2012-05-10 09:00:03 - Pid: 43 - Name: mtmfs - Inet_Family: 2 - Username: root - Local_Address: ('127.0.0.1', 49153) - Remote_Address: ('127.0.0.1', 1023) - Status: ESTABLISHED
+2012-05-15 14:29:41,256 WARNING Access to process 37072 denied.
+2012-05-15 14:29:41,724 INFO ** SoktSpy exited **
+2012-05-15 14:31:03,139 INFO ** SoktSpy started **
+2012-05-15 14:31:03,882 INFO IP: ['10.3.3.3', '127.0.0.1']	Frequency: 1 sec
+2012-05-15 14:31:04,888 CRITICAL - Create_Time: 2012-05-10 09:00:03 - Pid: 43 - Name: mtmfs - Inet_Family: 2 - Username: root - Local_Address: ('127.0.0.1', 49153) - Remote_Address: ('127.0.0.1', 1023) - Status: ESTABLISHED
+2012-05-15 14:31:04,890 WARNING Access to process 37072 denied.
+2012-05-15 14:31:04,977 INFO ** SoktSpy exited **
+2012-05-15 14:32:19,344 INFO ** SoktSpy started **
+2012-05-15 14:32:19,965 INFO Lookup for: ['10.3.3.3', '127.0.0.1'] Frequency: 1 sec
+2012-05-15 14:32:20,975 CRITICAL - Create_Time: 2012-05-10 09:00:03 	Pid: 43 - Name: mtmfs - Inet_Family: 2 - Username: root - Local_Address: ('127.0.0.1', 49153) - Remote_Address: ('127.0.0.1', 1023) - Status: ESTABLISHED
+2012-05-15 14:32:20,977 WARNING Access to process 37072 denied.
+2012-05-15 14:32:21,845 INFO ** SoktSpy exited **
+2012-05-15 14:40:54,110 INFO ** SoktSpy started **
+2012-05-15 14:40:55,144 INFO Lookup for: ['10.3.3.3', '127.0.0.1'] Frequency: 1 sec
+2012-05-15 14:40:56,156 CRITICAL - Create_Time: 2012-05-10 09:00:03 	Pid: 43 - Name: mtmfs - Inet_Family: 2 - Username: root - Local_Address: ('127.0.0.1', 49153) - Remote_Address: ('127.0.0.1', 1023) - Status: ESTABLISHED
+2012-05-15 14:40:56,158 WARNING Access to process 37072 denied.
+2012-05-15 15:38:33,402 INFO ** SoktSpy exited **

@@ -33,7 +33,6 @@ def config(confFile):
     """
 
     valList = []
-    path =''
     
     print '[*] Parsing Configuration File: %s' %confFile
 
@@ -57,14 +56,14 @@ def config(confFile):
         #print
 
     # check whether required fieds were retrieved, exit otherwise
-    if not filename or not valList or not freq or not valList:
+    if not filename or not valList or not freq:
         print '[!] Uncorrect configuration file. Exiting.'
         sys.exit(1)
 
     return (freq, filename, valList)
 
 
-def main():
+def main(freq,filename,ipList):
 
     print '''
             _     _    _____             
@@ -82,13 +81,10 @@ def main():
 
     liste = []
     excl = []
-    
-    # Parse configuration file
-    (freq,filePath,ipList) = config('soktSpy.cfg')
 
-    print '[*] IP address(es) to monitor: %s\n[*] Logging to file: %s\n[*] Polling frequency = %d sec' %(ipList, filePath, freq)
+    print '[*] IP address(es) to monitor: %s\n[*] Logging to file: %s\n[*] Polling frequency = %d sec' %(ipList, filename, freq)
     raw_input('[?] Press [Enter] to proceed ')
-    logger.info("IP: %s\tFrequency: %d sec")
+    logger.info("Lookup for: %s Frequency: %d sec" %(ipList, freq))
 
     # Main loop
     print '[*] Entering infinite loop. [Ctrl]+[c] to quit.'
@@ -140,7 +136,7 @@ def main():
                             # build the list and write to the log file (one line per socket)
                             print '[*] Logged an event'
                             liste.append(socket)
-                            logger.critical("%s %d %s %d %s %s --> %s %s" % (socket['ptime'],socket['pid'],socket['name'],socket['family'],socket['username'],socket['local_address'],socket['remote_address'],socket['status']))
+                            logger.critical("- Create_Time: %s Pid: %d - Name: %s - Inet_Family: %d - Username: %s - Local_Address: %s - Remote_Address: %s - Status: %s" % (socket['ptime'],socket['pid'],socket['name'],socket['family'],socket['username'],socket['local_address'],socket['remote_address'],socket['status']))
 
             except psutil.AccessDenied as e:
                 print "[!] Access to process %d denied." %e.pid
@@ -161,15 +157,18 @@ if __name__ == '__main__':
 
     try:
 
+        # Parse configuration file
+        (freq,filename,ipList) = config('soktSpy.cfg')
+
         logger = logging.getLogger('soktSpy')
-        handler = logging.FileHandler('soktSpy2.log')
+        handler = logging.FileHandler(filename)
         formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
         handler.setFormatter(formatter)
         logger.addHandler(handler)
         logger.setLevel(logging.INFO)
-        logger.info('SoktSpy started')
+        logger.info('** SoktSpy started **')
 
-        main()
+        main(freq,filename,ipList)
 
     except OSError:
         print "[!] I/O Error"
@@ -181,4 +180,4 @@ if __name__ == '__main__':
         logger.exception("")
     finally:
         print "[!] Exiting."
-        logger.info('SoktSpy exited')
+        logger.info('** SoktSpy exited **')
